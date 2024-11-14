@@ -12,8 +12,4 @@
     <EmbeddedResource Include="Deadpool.jpg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Keyboard.cs" />
-  </ItemGroup>
-
 </Project>

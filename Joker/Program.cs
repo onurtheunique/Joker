@@ -1,60 +1,55 @@
+
 using System;
 using System.Drawing;
-using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Reflection;
 
-namespace Joker
+public class FullScreenImageForm : Form
 {
-    public class FullScreenForm : Form
+    public FullScreenImageForm()
     {
-        int time = 10000;
-         static async void Ekranlar()
+        // Form ayarlarý: Tam ekran ve kenarlýk yok
+        this.FormBorderStyle = FormBorderStyle.None;
+        this.WindowState = FormWindowState.Maximized;
+        this.StartPosition = FormStartPosition.Manual;
+
+        // Klavye ve fare giriþlerini devre dýþý býrak
+        this.KeyPreview = true;
+        this.KeyDown += (s, e) => e.SuppressKeyPress = true;
+        //this.MouseClick += (s, e) => e.Handled = true;
+
+        // Resmi yükle ve göster
+        PictureBox pictureBox = new PictureBox();
+        Image image = Image.FromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Joker.Deadpool.jpg"));
+        pictureBox.Image = image;
+        pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+        pictureBox.Dock = DockStyle.Fill;
+        this.Controls.Add(pictureBox);
+
+        // 15 saniye sonra formu kapat
+        this.Shown += async (s, e) => {
+            await Task.Delay(15000);
+            this.Close();
+        };
+    }
+
+    [STAThread]
+    public static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        // Tüm ekranlarda formu göster
+        foreach (Screen screen in Screen.AllScreens)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Image image = Image.FromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Joker.Deadpool.jpg"));
-            // Her ekran için tam ekran form oluþtur
-            var forms = new FullScreenForm[Screen.AllScreens.Length];
-            for (int i = 0; i < Screen.AllScreens.Length; i++)
+            FullScreenImageForm form = new FullScreenImageForm
             {
-                forms[i] = new FullScreenForm(image)
-                {
-                    StartPosition = FormStartPosition.Manual,
-                    Location = Screen.AllScreens[i].Bounds.Location
-                };
-                forms[i].Show();
-            }
-            //Thread.Sleep(5000);
-            await Task.Delay(5000);
-            // Süre dolduktan sonra kapat
-            foreach (var form in forms)
-            {
-                form.Close();
-            }
+                Location = screen.Bounds.Location
+            };
+            form.Show();
         }
 
-
-         static async void Main()
-        {
-            
-            Task Ekran = Ekranlar();           
-            Task Inputs = Keyboard.Main(5000);
-            Ekran.Start();
-            Inputs.Start(5000);
-            //Ekranlar.Main(sure+5);
-            //Keyboard.Main(sure);
-
-        }
-        public FullScreenForm(Image image)
-        {
-            BackgroundImage = image;
-            BackgroundImageLayout = ImageLayout.Stretch;
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
-            TopMost = true;
-        }
-       
-
+        Application.Run();
     }
 }
