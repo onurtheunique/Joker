@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Joker
 {
-    public class Ekranlar()
+    //public class Ekranlar()
     {
         public static void Main(int sure)
         {
